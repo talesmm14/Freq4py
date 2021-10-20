@@ -101,7 +101,7 @@ class Sheet():
 
         paragraph.text = self.key_table[key]
 
-    def save(self):
-        self.replace_keys()
-        self.replace_table_values()
+    def save(self, key_words):
+        self.replace_keys(self, key_words)
+        self.replace_table_values(self)
         self.doc.save(self.save_path + '/Frequência_{}.docx'.format())
