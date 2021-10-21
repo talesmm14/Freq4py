@@ -1,15 +1,15 @@
+
 class Commissioned():
-    def __init__(self, name, capacity, effective_position, commissioned_position, registration, schedule, immediate_boss, mediate_boss):
+    def __init__(self, name, capacity, effective_position, commissioned_position, registration, immediate_boss, mediate_boss):
         self.name = name
         self.capacity = capacity
         self.effective_position = effective_position
         self.commissioned_position = commissioned_position
         self.registration = registration
-        self.schedule = schedule
         self.immediate_boss = immediate_boss
         self.mediate_boss = mediate_boss
 
-    def get_key_words(self):
+    def key_words(self):
         return {
             "${FIELD_DATE}": "",
             "${FIELD_TITLE_1}": "NOME:",
@@ -17,7 +17,6 @@ class Commissioned():
             "${FIELD_TITLE_3}": "CARGO EFETIVO:",
             "${FIELD_TITLE_4}": "CARGO COMISSIONADO:",
             "${FIELD_TITLE_5}": "MATRÍCULA:",
-            "${FIELD_TITLE_6}": "HORÁRIO:",
             "${FIELD_TITLE_7}": "Chefe Imediato:",
             "${FIELD_TITLE_8}": "Chefe Mediato:",
 
@@ -26,7 +25,6 @@ class Commissioned():
             "${FIELD_VALUE_3}": self.effective_position,
             "${FIELD_VALUE_4}": self.commissioned_position,
             "${FIELD_VALUE_5}": self.registration,
-            "${FIELD_VALUE_6}": self.schedule,
             "${FIELD_VALUE_7}": self.immediate_boss,
             "${FIELD_VALUE_8}": self.mediate_boss,
         }
