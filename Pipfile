@@ -1,0 +1,16 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+lxml = "==4.6.3"
+python-docx = "==0.8.11"
+flask = "*"
+flasgger = "*"
+
+[dev-packages]
+pytest = "*"
+
+[requires]
+python_version = "3.8"
