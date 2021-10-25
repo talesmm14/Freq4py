@@ -24,8 +24,8 @@ def main():
     ).key_words()
 
     sheet = Sheet(
-        "../Freq4py/Frequência - Modelo.docx",
-        "../Freq4py/save_doc",
+        "../Freq4py/static/docs/Frequência - Modelo.docx",
+        "../Freq4py/static/docs/save_docs",
         2021,
         12,
         normal,

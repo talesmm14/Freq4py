@@ -6,11 +6,13 @@ name = "pypi"
 [packages]
 lxml = "==4.6.3"
 python-docx = "==0.8.11"
-flask = "*"
-flasgger = "*"
+django = "*"
+gunicorn = "*"
+djangorestframework = "*"
 
 [dev-packages]
 pytest = "*"
+autopep8 = "*"
 
 [requires]
 python_version = "3.8"
