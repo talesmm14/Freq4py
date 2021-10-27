@@ -35,6 +35,12 @@ class Schedule(models.Model):
     morning_entry_time = models.TimeField(blank=True, null=True)
     morning_departure_time = models.TimeField(blank=True, null=True)
 
+    def __str__(self):
+        return (str(self.morning_entry_time.strftime("%H:%M")) + " -> " + 
+            str(self.morning_departure_time.strftime("%H:%M")) + " : " +
+            str(self.afternoon_entry_time.strftime("%H:%M")) + " -> " + 
+            str(self.afternoon_departure_time.strftime("%H:%M")))
+
     def key_words(self):
         return {
             "AM1": "",
@@ -54,6 +60,15 @@ class Sheet(models.Model):
     schedule = models.ForeignKey(Schedule, on_delete=models.CASCADE)
     path = "/docs/modelo.docx"
     save_path = "/docs/save_docs/"
+    img_path = models.ImageField(upload_to="img_sheet", height_field=2.67, width_field=6.94, max_length=100, blank=True, null=True)
+    title = models.CharField(blank=True, null=True, max_length=250)
+
+    def __str__(self):
+        if self.title != None:
+            return self.title + ' : ' + str(self.date) + ' > ' + str(self.schedule)
+        elif self.values_fields != None:
+            return self.values_fields.field_value_1 + ' : ' + str(self.date) + ' > ' + str(self.schedule)
+        return str(self.date) + ' : ' + str(self.schedule)
  
 class Not_Work_Type(models.Model):
     description = models.CharField(max_length=40, verbose_name="Nome")

@@ -104,11 +104,9 @@ class ExportDocx(APIView):
 def get_keys(sheet):
     if (sheet.titles_fields != None):
         title_fields = sheet.titles_fields
-        if (sheet.values_fields != None):
-            value_fields = sheet.values_fields
-            key_words = {**title_fields.__dict__, **value_fields.__dict__}
-        else:
-            key_words = title_fields.__dict__
+        if (sheet.values_fields == None):
+            value_fields = Sheet_Value()
+        key_words = {**title_fields.__dict__, **value_fields.__dict__}
     else:
         return None
     
@@ -125,28 +123,31 @@ def replace(doc, sheet, key_words):
     key_table = sheet.schedule.key_words()
     not_working_days = {int(not_work.day): str(not_work.description) for not_work in Not_Working_Day.objects.filter(sheet=sheet.id)}
     key_table.update({'field_date': (datetime.date(year, month, 1).strftime('%B')).swapcase() + "/" + str(year)})
+
+    key_words = {**key_words, **key_table}
     day = 0
     weekday = 0
 
-    for variable_key, variable_value in key_words.items():
-        for table in doc.tables:
-            for row in table.rows:
-                for cell in row.cells:
-                    if cell.text == "HM1":
-                        day += 1
-                        if day <= month_days:
-                            weekday = datetime.date(year=year, month=month, day=day).weekday()
-                    for key, value in key_table.items():
-                        for paragraph in cell.paragraphs:
-                            replace_text_in_paragraph(paragraph, variable_key, variable_value)
-                            if weekday == 5 or weekday == 6:
-                                value = replace_weekend(weekday, key)
-                            elif day in not_working_days.keys():
-                                if key[0] != 'H':
-                                    value = not_working_days[day]
-                                else:
-                                    value = "****"
-                            replace_text_in_paragraph(paragraph, key, value)
+    for table in doc.tables:
+        for row in table.rows:
+            for cell in row.cells:
+                if cell.text == "HM1":
+                    day += 1
+                    if day <= month_days:
+                        weekday = datetime.date(year=year, month=month, day=day).weekday()
+                        
+                for paragraph in cell.paragraphs:
+                    for variable_key, variable_value in key_words.items():
+                        if weekday == 5 or weekday == 6:
+                            variable_value = replace_weekend(weekday, variable_key)
+                        elif day in not_working_days.keys():
+                            if variable_key[0] != 'H':
+                                variable_value = not_working_days[day]
+                            else:
+                                variable_value = "****"
+                        if variable_value == 'HM1':
+                            print(paragraph.text, variable_key, variable_value)
+                        replace_text_in_paragraph(paragraph, variable_key, variable_value)
 
 def replace_weekend(weekday, key):
     if key[0] != 'H':
