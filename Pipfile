@@ -10,6 +10,8 @@ django = "*"
 gunicorn = "*"
 djangorestframework = "*"
 pillow = "*"
+djangorestframework-simplejwt = "*"
+simplejwt = "*"
 
 [dev-packages]
 pytest = "*"
