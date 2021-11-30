@@ -2,7 +2,6 @@ from django.db import models
 from django.conf import settings
 import datetime
 
-from django.db.models.fields.related import OneToOneField
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import ugettext_lazy as _
 
@@ -63,6 +62,7 @@ class Sheet_Value(models.Model):
         max_length=100, blank=True, null=True, default="")
     field_value_8 = models.CharField(
         max_length=100, blank=True, null=True, default="")
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
 
     def __str__(self):
         return str(self.field_value_1)
@@ -94,7 +94,7 @@ class Schedule(models.Model):
 
 
 class Sheet(models.Model):
-    user = OneToOneField(CustomUser, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     date = models.DateField(default=datetime.date.today)
     titles_fields = models.ForeignKey(Sheet_Title, on_delete=models.CASCADE)
     values_fields = models.ForeignKey(

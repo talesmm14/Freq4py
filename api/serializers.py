@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
+from django.db.models.query_utils import select_related_descend
 from rest_framework import serializers
-from api.models import Sheet
+from api.models import Not_Work_Type, Not_Working_Day, Schedule, Sheet, Sheet_Title, Sheet_Value
 from rest_framework.permissions import AllowAny
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
@@ -60,7 +61,65 @@ class MyObtainTokenPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
 
 
+class User_Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = '__all__'
+
+
+class Not_Working_Type_Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = Not_Work_Type
+        fields = '__all__'
+        read_only_fields = ['id']
+
+
+class Not_Working_Day_Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = Not_Working_Day
+        fields = (
+            'id',
+            'sheet',
+            'description',
+            'day',
+        )
+        read_only_fields = ['id']
+
+
+class Titles_fields_Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = Sheet_Title
+        fields = '__all__'
+        read_only_fields = ['id']
+
+
+class Values_fields_Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = Sheet_Value
+        fields = '__all__'
+        read_only_fields = ['id', 'user']
+
+
+class Schedule_Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = Schedule
+        fields = '__all__'
+        read_only_fields = ['id']
+
+
 class Sheet_Serializer(serializers.ModelSerializer):
+    titles_fields = serializers.StringRelatedField()
+    values_fields = Values_fields_Serializer()
+
     class Meta:
         model = Sheet
-        fiedls = '__all__'
+        fields = (
+            'user',
+            'date',
+            'titles_fields',
+            'values_fields',
+            'schedule',
+            'title',
+            'img_path',
+        )
+        read_only_fields = ['id', 'user']
