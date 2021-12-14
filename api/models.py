@@ -1,10 +1,9 @@
 from django.db import models
-from django.conf import settings
 import datetime
 
 from django.contrib.auth.models import AbstractUser
-from django.utils.translation import ugettext_lazy as _
-
+from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.models import User
 
 from .managers import CustomUserManager
 
@@ -22,7 +21,7 @@ class CustomUser(AbstractUser):
         return self.email
 
 
-class Sheet_Title(models.Model):
+class SheetTitle(models.Model):
     name = models.CharField(max_length=250)
     field_title_1 = models.CharField(
         max_length=30, blank=True, null=True, default="")
@@ -45,7 +44,7 @@ class Sheet_Title(models.Model):
         return self.name
 
 
-class Sheet_Value(models.Model):
+class SheetValue(models.Model):
     field_value_1 = models.CharField(
         max_length=100, blank=True, null=True, default="")
     field_value_2 = models.CharField(
@@ -96,9 +95,9 @@ class Schedule(models.Model):
 class Sheet(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     date = models.DateField(default=datetime.date.today)
-    titles_fields = models.ForeignKey(Sheet_Title, on_delete=models.CASCADE)
+    titles_fields = models.ForeignKey(SheetTitle, on_delete=models.CASCADE)
     values_fields = models.ForeignKey(
-        Sheet_Value, on_delete=models.CASCADE, blank=True, null=True)
+        SheetValue, on_delete=models.CASCADE, blank=True, null=True)
     schedule = models.ForeignKey(Schedule, on_delete=models.CASCADE)
     path = "/docs/modelo.docx"
     save_path = "/docs/save_docs/"
@@ -107,24 +106,24 @@ class Sheet(models.Model):
     title = models.CharField(blank=True, null=True, max_length=250)
 
     def __str__(self):
-        if self.title != None:
+        if self.title:
             return self.title + ' : ' + str(self.date) + ' > ' + str(self.schedule)
-        elif self.values_fields != None:
+        elif self.values_fields:
             return self.values_fields.field_value_1 + ' : ' + str(self.date) + ' > ' + str(self.schedule)
         return str(self.date) + ' : ' + str(self.schedule)
 
 
-class Not_Work_Type(models.Model):
+class NotWorkType(models.Model):
     description = models.CharField(max_length=40, verbose_name="Nome")
 
     def __str__(self):
         return self.description
 
 
-class Not_Working_Day(models.Model):
+class NotWorkingDay(models.Model):
     sheet = models.ForeignKey(
         Sheet(), on_delete=models.CASCADE, blank=True, null=True)
-    description = models.ForeignKey(Not_Work_Type, on_delete=models.CASCADE)
+    description = models.ForeignKey(NotWorkType, on_delete=models.CASCADE)
     day = models.IntegerField(blank=False, null=False)
 
     def __str__(self):

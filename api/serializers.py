@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.db.models.query_utils import select_related_descend
 from rest_framework import serializers
-from api.models import Not_Work_Type, Not_Working_Day, Schedule, Sheet, Sheet_Title, Sheet_Value
+from api.models import NotWorkType, NotWorkingDay, Schedule, Sheet, SheetTitle, SheetValue
 from rest_framework.permissions import AllowAny
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
@@ -13,6 +13,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
+
 
 class RegisterSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
@@ -57,26 +58,26 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 
 class MyObtainTokenPairView(TokenObtainPairView):
-    permission_classes = (AllowAny, )
+    permission_classes = (AllowAny,)
     serializer_class = MyTokenObtainPairSerializer
 
 
-class User_Serializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = '__all__'
 
 
-class Not_Working_Type_Serializer(serializers.ModelSerializer):
+class NotWorkingTypeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Not_Work_Type
+        model = NotWorkType
         fields = '__all__'
         read_only_fields = ['id']
 
 
-class Not_Working_Day_Serializer(serializers.ModelSerializer):
+class NotWorkingDaySerializer(serializers.ModelSerializer):
     class Meta:
-        model = Not_Working_Day
+        model = NotWorkingDay
         fields = (
             'id',
             'sheet',
@@ -86,30 +87,30 @@ class Not_Working_Day_Serializer(serializers.ModelSerializer):
         read_only_fields = ['id']
 
 
-class Titles_fields_Serializer(serializers.ModelSerializer):
+class TitlesFieldsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Sheet_Title
+        model = SheetTitle
         fields = '__all__'
         read_only_fields = ['id']
 
 
-class Values_fields_Serializer(serializers.ModelSerializer):
+class ValuesFieldsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Sheet_Value
+        model = SheetValue
         fields = '__all__'
         read_only_fields = ['id', 'user']
 
 
-class Schedule_Serializer(serializers.ModelSerializer):
+class ScheduleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Schedule
         fields = '__all__'
         read_only_fields = ['id']
 
 
-class Sheet_Serializer(serializers.ModelSerializer):
+class SheetSerializer(serializers.ModelSerializer):
     titles_fields = serializers.StringRelatedField()
-    values_fields = Values_fields_Serializer()
+    values_fields = ValuesFieldsSerializer()
 
     class Meta:
         model = Sheet

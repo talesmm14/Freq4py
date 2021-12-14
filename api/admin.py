@@ -2,15 +2,15 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from api.forms import CustomUserChangeForm, CustomUserCreationForm
 
-from api.models import CustomUser, Not_Working_Day, Schedule, Sheet, Sheet_Title, Sheet_Value, Not_Work_Type
+from api.models import CustomUser, NotWorkingDay, Schedule, Sheet, SheetTitle, SheetValue, NotWorkType
 
 # Register your models here.
-admin.site.register(Sheet_Value)
-admin.site.register(Sheet_Title)
+admin.site.register(SheetValue)
+admin.site.register(SheetTitle)
 admin.site.register(Sheet)
 admin.site.register(Schedule)
-admin.site.register(Not_Working_Day)
-admin.site.register(Not_Work_Type)
+admin.site.register(NotWorkingDay)
+admin.site.register(NotWorkType)
 
 class CustomUserAdmin(UserAdmin):
     add_form = CustomUserCreationForm
