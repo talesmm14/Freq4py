@@ -1,10 +1,13 @@
 from django.http import Http404, StreamingHttpResponse
 from django.conf import settings
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import generics, status
+from django.contrib.auth import get_user_model
+
 from api.models import NotWorkType, NotWorkingDay, Schedule, Sheet, SheetTitle, SheetValue
+from api.permissions import ReadOnly
 from api.serializers import NotWorkingTypeSerializer, ScheduleSerializer, SheetSerializer, RegisterSerializer, \
     TitlesFieldsSerializer, ValuesFieldsSerializer, NotWorkingDaySerializer
 
@@ -15,8 +18,6 @@ import locale
 from calendar import monthrange
 
 locale.setlocale(locale.LC_ALL, 'pt_BR.utf8')
-
-from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
@@ -30,41 +31,56 @@ class RegisterView(generics.CreateAPIView):
 class NotWorkTypeList(generics.ListCreateAPIView):
     queryset = NotWorkType.objects.all()
     serializer_class = NotWorkingTypeSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class NotWorkTypeDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = NotWorkType.objects.all()
+    serializer_class = NotWorkingTypeSerializer
+    permission_classes = [IsAuthenticated, ReadOnly]
 
 
 class ScheduleList(generics.ListCreateAPIView):
     queryset = Schedule.objects.all()
     serializer_class = ScheduleSerializer
+    permission_classes = [IsAuthenticated]
 
 
 class ScheduleDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Schedule.objects.all()
     serializer_class = ScheduleSerializer
+    permission_classes = [IsAuthenticated, ReadOnly]
 
 
 class NotWorkingDayList(generics.ListCreateAPIView):
     queryset = NotWorkingDay.objects.all()
     serializer_class = NotWorkingDaySerializer
+    permission_classes = [IsAuthenticated]
 
 
 class NotWorkingDayDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = NotWorkingDay.objects.all()
     serializer_class = NotWorkingDaySerializer
+    permission_classes = [IsAuthenticated, ReadOnly]
 
 
 class TitlesList(generics.ListCreateAPIView):
     queryset = SheetTitle.objects.all()
     serializer_class = TitlesFieldsSerializer
+    permission_classes = [IsAuthenticated]
 
 
 class TitlesDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = SheetTitle.objects.all()
     serializer_class = TitlesFieldsSerializer
+    permission_classes = [IsAuthenticated, ReadOnly]
 
 
 class ValuesList(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, format=None):
-        snippets = SheetValue.objects.all()
+        snippets = User.objects.get(pk=request.user.pk).sheetvalue_set.all()
         serializer = ValuesFieldsSerializer(snippets, many=True)
         return Response(serializer.data)
 
@@ -80,22 +96,21 @@ class ValuesList(APIView):
 
 
 class ValuesDetail(APIView):
-    def get_object(self, pk, user):
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self, pk):
         try:
-            value = SheetValue.objects.get(pk=pk)
-            if value.user == user:
-                return value
-            return None
+            return User.objects.get(pk=self.request.user.pk).sheetvalue_set.filter(pk=pk)
         except SheetValue.DoesNotExist:
             raise Http404
 
     def get(self, request, pk, format=None):
-        snippets = self.get_object(pk, self.request.user)
+        snippets = self.get_object(pk)
         serializer = ValuesFieldsSerializer(snippets, many=True)
         return Response(serializer.data)
 
     def put(self, request, pk, format=None):
-        snippets = self.get_object(pk, self.request.user)
+        snippets = self.get_object(pk)
         serializer = ValuesFieldsSerializer(snippets, many=True)
 
         if serializer.is_valid():
@@ -104,18 +119,19 @@ class ValuesDetail(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk, format=None):
-        snippets = self.get_object(pk, self.request.user)
-        serializer = ValuesFieldsSerializer(snippets, many=True)
+        snippets = self.get_object(pk)
 
-        if serializer.is_valid():
-            serializer.delete()
+        if snippets.is_valid():
+            snippets.delete()
             return Response(status.HTTP_200_OK)
-        return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+        return Response(status.HTTP_400_BAD_REQUEST)
 
 
 class SheetList(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, format=None):
-        snippets = Sheet.objects.all()
+        snippets = User.objects.get(pk=self.request.user.pk).sheet_set.all()
         serializer = SheetSerializer(snippets, many=True)
         return Response(serializer.data)
 
@@ -131,9 +147,11 @@ class SheetList(APIView):
 
 
 class SheetDetail(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get_object(self, pk):
         try:
-            sheet = Sheet.objects.get(pk=pk)
+            sheet = User.objects.get(pk=self.request.user.pk).sheet_set.filter(pk=pk)
             return sheet
         except Sheet.DoesNotExist:
             raise Http404
@@ -154,18 +172,19 @@ class SheetDetail(APIView):
 
     def delete(self, request, pk, format=None):
         snippets = self.get_object(pk)
-        serializer = SheetSerializer(snippets, many=True)
 
-        if serializer.is_valid():
-            serializer.delete()
+        if snippets.is_valid():
+            snippets.delete()
             return Response(status.HTTP_200_OK)
-        return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+        return Response(status.HTTP_400_BAD_REQUEST)
 
 
 class ExportDocx(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get_object(self, pk):
         try:
-            sheet = Sheet.objects.get(pk=pk)
+            sheet = User.objects.get(pk=self.request.user.pk).sheet_set.filter(pk=pk)
             return sheet
         except Sheet.DoesNotExist:
             raise Http404
@@ -178,7 +197,7 @@ class ExportDocx(APIView):
         path = settings.STATIC_ROOT + sheet.path
         key_words = get_keys(sheet)
 
-        if key_words == None:
+        if key_words is None:
             return Response(status.HTTP_400_BAD_REQUEST)
 
         document = docx.Document(path)
@@ -204,9 +223,9 @@ class ExportDocx(APIView):
 
 
 def get_keys(sheet):
-    if (sheet.titles_fields != None):
+    if sheet.titles_fields is not None:
         title_fields = sheet.titles_fields
-        if (sheet.values_fields == None):
+        if sheet.values_fields is None:
             value_fields = SheetValue()
         else:
             value_fields = sheet.values_fields
@@ -273,7 +292,7 @@ def replace_text_in_paragraph(paragraph, key, value):
         inline = paragraph.runs
         for item in inline:
             if key in item.text:
-                if value != None:
+                if value is not None:
                     item.text = item.text.replace(key, value)
                 else:
                     item.text = ""
