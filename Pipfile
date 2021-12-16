@@ -12,6 +12,8 @@ djangorestframework = "*"
 pillow = "*"
 djangorestframework-simplejwt = "*"
 simplejwt = "*"
+psycopg2 = "*"
+psycopg2-binary = "*"
 
 [dev-packages]
 pytest = "*"

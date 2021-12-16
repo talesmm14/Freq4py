@@ -1,7 +1,7 @@
 from django.urls import path, include
 from api.serializers import MyObtainTokenPairView
 from api.views import ExportDocx, RegisterView, ScheduleDetail, ScheduleList, SheetDetail, SheetList, TitlesDetail, \
-    TitlesList, ValuesDetail, ValuesList, NotWorkingDayList, NotWorkingDayDetail
+    TitlesList, ValuesDetail, ValuesList, NotWorkingDayList, NotWorkingDayDetail, NotWorkTypeList, NotWorkTypeDetail
 
 urlpatterns = [
     path('sheets/', SheetList.as_view(), name='sheet-view'),
@@ -10,6 +10,8 @@ urlpatterns = [
     path('schedules/<int:pk>/', ScheduleDetail.as_view(), name='schedule-detail'),
     path('notworkingdays/', NotWorkingDayList.as_view(), name='not-working-day-list'),
     path('notworkingdays/<int:pk>/', NotWorkingDayDetail.as_view(), name='not-working-day-detail'),
+    path('notworkingtypes/', NotWorkTypeList.as_view(), name='not-working-day-list'),
+    path('notworkingtypes/<int:pk>/', NotWorkTypeDetail.as_view(), name='not-working-day-detail'),
     path('titles/', TitlesList.as_view(), name='titles-list'),
     path('titles/<int:pk>/', TitlesDetail.as_view(), name='titles-detail'),
     path('values/', ValuesList.as_view(), name='values-list'),
