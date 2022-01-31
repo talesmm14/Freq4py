@@ -14,6 +14,8 @@ djangorestframework-simplejwt = "*"
 simplejwt = "*"
 psycopg2 = "*"
 psycopg2-binary = "*"
+pyyaml = "*"
+django-rest-swagger = "*"
 
 [dev-packages]
 pytest = "*"
