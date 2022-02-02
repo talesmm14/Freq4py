@@ -35,3 +35,9 @@ Projeto feito em Python que cria de forma automatizada a folha de frequência.
     http://localhost:8000/api/values/
 #### exportdocx
     http://localhost:8000/api/exportdocx/
+
+## API Docs
+#### swagger
+    http://localhost:8000/swagger/
+#### redoc
+    http://localhost:8000/redoc/
