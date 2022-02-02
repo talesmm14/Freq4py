@@ -4,7 +4,7 @@ services:
   db:
     image: postgres
     volumes:
-      - ./data/db:/var/lib/postgresql/data/
+      - ./back-end/data/db:/var/lib/postgresql/data/
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=frequinpy_db
@@ -12,8 +12,19 @@ services:
     ports:
       - "5434:5434"
 
+  angular:
+    build:
+      dockerfile: ./angular.dockerfile
+      context: .
+    volumes:
+      - ./front-end/:/front-end
+    ports:
+      - "4200:4200"
+
   app:
-    build: .
+    build:
+      dockerfile: ./django.dockerfile
+      context: .
     command: python manage.py runserver 0.0.0.0:8000
     environment:
       - DB_NAME=postgres

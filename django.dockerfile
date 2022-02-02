@@ -3,7 +3,7 @@ FROM python:3.8
 EXPOSE 8000
 
 WORKDIR /app
-COPY . /app
+COPY back-end /app
 
 # Keeps Python from generating .pyc files in the container
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -35,7 +35,7 @@ RUN pip3 install --upgrade pip
 RUN pip3 install pipenv
 
 # Install pip requirements
-COPY Pipfile Pipfile.lock ./ 
+COPY back-end/Pipfile back-end/Pipfile.lock ./
 RUN pipenv install
 
 # Install project dependencies

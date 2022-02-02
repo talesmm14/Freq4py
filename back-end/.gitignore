@@ -15,7 +15,7 @@ _mailinglist
 .tox/
 .cache/
 .pytest_cache/
-.idea/
+../.idea/
 docs/_build/
 .vscode
 data/db
