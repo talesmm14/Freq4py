@@ -17,7 +17,8 @@ services:
       dockerfile: ./angular.dockerfile
       context: .
     volumes:
-      - ./front-end/:/front-end
+      - ./front-end/:/front-end/
+      - front-end/node_modules/
     ports:
       - "4200:4200"
 
